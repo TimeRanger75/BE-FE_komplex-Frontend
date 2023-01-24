@@ -1,26 +1,59 @@
-import React from 'react';
+import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+interface State{
+  CDrives:CDrive[];
+}
+
+interface CDrive{
+  id: number
+  nev: string;
+  meret: number;
+  ar: number;
+}
+
+interface CDRiveResponse{
+  CDrives:CDrive[];
+}
+
+
+
+class App extends Component<{}, State>{
+  constructor(props:{}){
+    super(props)
+
+    this.state={
+      CDrives:[],
+    }
+  }
+
+  async loadCDrives(){
+    let response= await fetch('http://localhost:3000/api/tarhely');
+    let data=await response.json() as CDRiveResponse;
+    this.setState({
+      CDrives:data.CDrives
+    });
+  }
+
+  componentDidMount(){
+      this.loadCDrives();
+  }
+
+  render(){
+     return <div>
+      <h1>Felhő tárhelyek</h1>
+      <ul>
+        {
+          this.state.CDrives.map(CDrive=><li><h2>{CDrive.nev}<ul><li>Méret: {CDrive.meret}GB</li><li>Ár: {CDrive.ar}Ft/hó</li></ul></h2></li> )
+        }
+      </ul>
+      
+     </div>
+  }
+  
 }
 
 export default App;
